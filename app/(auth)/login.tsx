@@ -59,7 +59,7 @@ const Login = () => {
 
           <Input
             placeholder="Enter your password"
-            secureTextEntry
+            secureTextEntry 
             onChangeText={(value) => (passwordRef.current = value)}
             icon={
               <Icons.Lock

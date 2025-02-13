@@ -61,7 +61,7 @@ const Welcome = () => {
               .damping(12)}
             style={styles.buttonContainer}
           >
-            <Button onPress={() => router.push('/(auth)/register')}>
+            <Button onPress={() => router.replace('/(tabs)')}>
               <Typo size={22} color={colors.neutral900} fontWeight={"600"}>
                 Get Started
               </Typo>
