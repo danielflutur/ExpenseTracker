@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import { colors, radius, spacingX, spacingY } from "@/constants/theme";
@@ -7,8 +7,41 @@ import Header from "@/components/Header";
 import BackButton from "@/components/BackButton";
 import Typo from "@/components/Typo";
 import { Image } from "expo-image";
+import { getProfileImage } from "@/services/imageService";
+import * as Icons from "phosphor-react-native";
+import { AccountOptionType } from "@/types";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import { useRouter } from "expo-router";
 
 const Profile = () => {
+  const router = useRouter();
+  const accountOptions: AccountOptionType[] = [
+    {
+      title: "Edit Profile",
+      icon: <Icons.User size={26} color={colors.white} weight="fill" />,
+      routeName: "/(modals)/profileModal",
+      bgColor: "#6366f1",
+    },
+    {
+      title: "Settings",
+      icon: <Icons.GearSix size={26} color={colors.white} weight="fill" />,
+      // routeName: "/(modals)/profileModal",
+      bgColor: "#059669",
+    },
+    {
+      title: "Privacy Policy",
+      icon: <Icons.Lock size={26} color={colors.white} weight="fill" />,
+      // routeName: "/(modals)/profileModal",
+      bgColor: colors.neutral600,
+    },
+  ];
+
+  const handlePress = async (item: AccountOptionType) => {
+    if (item.routeName) {
+      router.push(item.routeName);
+    }
+  };
+
   return (
     <ScreenWrapper>
       <View style={styles.container}>
@@ -19,7 +52,7 @@ const Profile = () => {
           <View>
             {/* user image */}
             <Image
-              source={"null"}
+              source={getProfileImage("")}
               style={styles.avatar}
               contentFit="cover"
               transition={100}
@@ -35,6 +68,45 @@ const Profile = () => {
               email de smecher
             </Typo>
           </View>
+        </View>
+
+        {/* account options */}
+        <View style={styles.accountOptions}>
+          {accountOptions.map((item, index) => {
+            return (
+              <Animated.View
+                key={index.toString()}
+                entering={FadeInDown.delay(index * 50)
+                  .springify()
+                  .damping(14)}
+                style={styles.listItem}
+              >
+                <TouchableOpacity
+                  style={styles.flexRow}
+                  onPress={() => handlePress(item)}
+                >
+                  <View
+                    style={[
+                      styles.listIcon,
+                      {
+                        backgroundColor: item?.bgColor,
+                      },
+                    ]}
+                  >
+                    {item.icon && item.icon}
+                  </View>
+                  <Typo size={16} style={{ flex: 1 }} fontWeight={"500"}>
+                    {item.title}
+                  </Typo>
+                  <Icons.CaretRight
+                    size={verticalScale(20)}
+                    weight="bold"
+                    color={colors.white}
+                  />
+                </TouchableOpacity>
+              </Animated.View>
+            );
+          })}
         </View>
       </View>
     </ScreenWrapper>
