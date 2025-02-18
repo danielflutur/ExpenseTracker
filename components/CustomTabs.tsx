@@ -5,7 +5,6 @@ import { colors, spacingY } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import * as Icons from "phosphor-react-native";
 
-
 export default function CustomTabs({
   state,
   descriptors,

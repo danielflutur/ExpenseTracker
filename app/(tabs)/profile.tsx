@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import { colors, radius, spacingX, spacingY } from "@/constants/theme";
@@ -12,8 +12,12 @@ import * as Icons from "phosphor-react-native";
 import { AccountOptionType } from "@/types";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
+import { useAuth } from "@/contexts/authContext";
+import { signOut } from "firebase/auth";
+import { auth } from "@/config/firebase";
 
 const Profile = () => {
+  const { user } = useAuth();
   const router = useRouter();
   const accountOptions: AccountOptionType[] = [
     {
@@ -34,9 +38,38 @@ const Profile = () => {
       // routeName: "/(modals)/profileModal",
       bgColor: colors.neutral600,
     },
+    {
+      title: "Logout",
+      icon: <Icons.Power size={26} color={colors.white} weight="fill" />,
+      // routeName: "/(modals)/profileModal",
+      bgColor: "#e11d48",
+    },
   ];
 
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
+  const showLogoutAlert = () => {
+    Alert.alert("Confirm", "Are you sure you want to log out?", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("cancel logout"),
+        style: "cancel",
+      },
+      {
+        text: "Logout",
+        onPress: () => handleLogout(),
+        style: "destructive",
+      },
+    ]);
+  };
+
   const handlePress = async (item: AccountOptionType) => {
+    if (item.title == "Logout") {
+      showLogoutAlert();
+    }
+
     if (item.routeName) {
       router.push(item.routeName);
     }
@@ -52,7 +85,7 @@ const Profile = () => {
           <View>
             {/* user image */}
             <Image
-              source={getProfileImage("")}
+              source={getProfileImage(user?.image)}
               style={styles.avatar}
               contentFit="cover"
               transition={100}
@@ -61,11 +94,11 @@ const Profile = () => {
           {/* name & email */}
           <View style={styles.nameContainer}>
             <Typo size={24} fontWeight={"600"} color={colors.neutral100}>
-              Dani
+              {user?.name}
             </Typo>
 
-            <Typo size={24} color={colors.neutral400}>
-              email de smecher
+            <Typo size={15} color={colors.neutral400}>
+              {user?.email}
             </Typo>
           </View>
         </View>
